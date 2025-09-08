@@ -195,6 +195,10 @@ events.on(/^order\..*:change/, (data: { field: keyof IOrderForm, value: string }
     appData.setOrderField(data.field, data.value);
 });
 
+events.on(/^contacts\..*:change/, (data: { field: keyof IOrderForm, value: string }) => {
+    appData.setOrderField(data.field, data.value);
+});
+
 // Ошибки формы
 // events.on('formErrors:change', (errors: Partial<IOrderForm>) => {
 //     const { payment, address } = errors;
@@ -202,8 +206,27 @@ events.on(/^order\..*:change/, (data: { field: keyof IOrderForm, value: string }
 //     order.errors = Object.values({payment, address}).filter(i => !!i).join('; ');
 // });
 
+events.on('formErrors:change', (errors: Partial<IOrderForm>) => {
+	const { address, payment, phone, email } = errors;
+	orderPayments.valid = !payment && !address;
+	orderPayments.errors = Object.values({ payment, address })
+		.filter((i) => !!i)
+		.join('; ');
+	orderContacts.valid = !phone && !email;
+	orderContacts.errors = Object.values({ phone, email })
+		.filter((i) => !!i)
+		.join('; ');
+});
+
+
 // Отправка заказа
-events.on('order:submit', () => {
+events.on('contacts:submit', () => {
+    if (!appData.validateOrder()) {
+        // Проверка валидации
+        console.warn('Order validation failed, cannot submit');
+        return;
+    }
+
     appData.order.items = appData.basket;
     appData.order.total = appData.getTotal();
 
@@ -235,3 +258,4 @@ events.on('modal:open', () => {
 events.on('modal:close', () => {
     page.locked = false;
 });
+
