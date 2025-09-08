@@ -9,7 +9,9 @@ import { CatalogItem, PreviewItem, BasketItem } from "./components/Card";
 import { cloneTemplate, ensureElement } from "./utils/utils";
 import { Modal } from "./components/common/Modal";
 import { Basket } from "./components/common/Basket";
-import { Order } from "./components/Order";
+// import { Order } from "./components/Order";
+import { OrderPayments } from './components/OrderPayment';
+import { OrderContacts } from './components/OrderContact';
 import { Success } from "./components/common/Success";
 import { IOrderForm } from "./types";
 
@@ -28,7 +30,9 @@ console.log('Card catalog template:', cardCatalogTemplate); // Проверяе�
 const cardPreviewTemplate = ensureElement<HTMLTemplateElement>('#card-preview');
 const cardBasketTemplate = ensureElement<HTMLTemplateElement>('#card-basket');
 const basketTemplate = ensureElement<HTMLTemplateElement>('#basket');
-const orderTemplate = ensureElement<HTMLTemplateElement>('#order');
+// const orderTemplate = ensureElement<HTMLTemplateElement>('#order');
+const OrderContactsTemplate = ensureElement<HTMLTemplateElement>('#contacts');
+const OrderPaymentsTemplate = ensureElement<HTMLTemplateElement>('#order');
 const successTemplate = ensureElement<HTMLTemplateElement>('#success');
 
 // Модель данных приложения
@@ -40,7 +44,9 @@ const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
 
 // Переиспользуемые части интерфейса
 const basket = new Basket(cloneTemplate(basketTemplate), events);
-const order = new Order(cloneTemplate(orderTemplate), events);
+// const order = new Order(cloneTemplate(orderTemplate), events);
+const orderContacts = new OrderContacts(cloneTemplate(OrderContactsTemplate), events);
+const orderPayments = new OrderPayments(cloneTemplate(OrderPaymentsTemplate), events);
 
 // Загружаем товары с сервера
 api.getProductList()
@@ -142,15 +148,46 @@ events.on('basket:open', () => {
 });
 
 // Открыть форму заказа
+// events.on('order:open', () => {
+//     modal.render({
+//         content: order.render({
+//             payment: '',
+//             address: '',
+//             valid: false,
+//             errors: []
+//         })
+//     });
+// });
+
 events.on('order:open', () => {
-    modal.render({
-        content: order.render({
-            payment: '',
-            address: '',
-            valid: false,
-            errors: []
-        })
-    });
+	orderPayments.cancelPayment();
+	modal.render({
+		content: orderPayments.render({
+			address: '',
+			valid: false,
+			errors: [],
+		}),
+	});
+});
+
+events.on(
+	'order:change payment',
+	(data: { payment: string; button: HTMLElement }) => {
+		appData.setOrderPayment(data.payment);
+		orderPayments.togglePayment(data.button);
+		appData.validateOrder();
+	}
+);
+
+events.on('order:submit', () => {
+	modal.render({
+		content: orderContacts.render({
+			email: '',
+			phone: '',
+			valid: false,
+			errors: [],
+		}),
+	});
 });
 
 // Изменение полей формы заказа
@@ -159,11 +196,11 @@ events.on(/^order\..*:change/, (data: { field: keyof IOrderForm, value: string }
 });
 
 // Ошибки формы
-events.on('formErrors:change', (errors: Partial<IOrderForm>) => {
-    const { payment, address } = errors;
-    order.valid = !payment && !address;
-    order.errors = Object.values({payment, address}).filter(i => !!i).join('; ');
-});
+// events.on('formErrors:change', (errors: Partial<IOrderForm>) => {
+//     const { payment, address } = errors;
+//     order.valid = !payment && !address;
+//     order.errors = Object.values({payment, address}).filter(i => !!i).join('; ');
+// });
 
 // Отправка заказа
 events.on('order:submit', () => {

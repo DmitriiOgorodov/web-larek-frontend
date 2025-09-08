@@ -28,6 +28,16 @@ export interface IOrder extends IOrderForm {
     total: number; // Добавлено поле total
 }
 
+export interface IOrderContacts {
+	email: string;
+	phone: string;
+}
+
+export interface IOrderPayments {
+	payment: string;
+	address: string;
+}
+
 export type FormErrors = Partial<Record<keyof IOrder, string>>;
 
 export interface IOrderResult {
