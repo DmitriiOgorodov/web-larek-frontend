@@ -3,7 +3,7 @@ import './scss/styles.scss';
 import { LarekAPI } from "./components/LarekAPI";
 import { API_URL, CDN_URL } from "./utils/constants";
 import { EventEmitter } from "./components/base/events";
-import { AppState, CatalogChangeEvent, ProductItem } from "./components/AppData";
+import { AppState, CatalogChangeEvent} from "./components/AppData";
 import { Page } from "./components/Page";
 import { CatalogItem, PreviewItem, BasketItem } from "./components/Card";
 import { cloneTemplate, ensureElement } from "./utils/utils";
@@ -13,7 +13,7 @@ import { Basket } from "./components/common/Basket";
 import { OrderPayments } from './components/OrderPayment';
 import { OrderContacts } from './components/OrderContact';
 import { Success } from "./components/common/Success";
-import { IOrderForm } from "./types";
+import { IOrderForm, IProduct } from "./types";
 
 // Инициализация брокера событий
 const events = new EventEmitter();
@@ -78,13 +78,13 @@ events.on<CatalogChangeEvent>('items:changed', () => {
 });
 
 // Открыть товар
-events.on('card:select', (item: ProductItem) => {
+events.on('card:select', (item: IProduct) => {
     appData.setPreview(item);
 });
 
 // Изменён просматриваемый товар
-events.on('preview:changed', (item: ProductItem) => {
-    const showItem = (item: ProductItem) => {
+events.on('preview:changed', (item: IProduct) => {
+    const showItem = (item: IProduct) => {
         const card = new PreviewItem(cloneTemplate(cardPreviewTemplate), {
             onClick: () => {
                 events.emit('item:add', item);
@@ -118,7 +118,7 @@ events.on('preview:changed', (item: ProductItem) => {
 });
 
 // Добавить товар в корзину
-events.on('item:add', (item: ProductItem) => {
+events.on('item:add', (item: IProduct) => {
     appData.toggleBasketItem(item.id, true);
     modal.close();
 });
@@ -258,4 +258,3 @@ events.on('modal:open', () => {
 events.on('modal:close', () => {
     page.locked = false;
 });
-

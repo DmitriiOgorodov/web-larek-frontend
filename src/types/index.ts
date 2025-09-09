@@ -1,4 +1,4 @@
-import { ProductItem } from '../components/AppData'; // Добавлен импорт ProductItem
+// import { ProductItem } from '../components/AppData'; // Добавлен импорт ProductItem
 
 export interface IProduct {
     id: string;
@@ -10,7 +10,7 @@ export interface IProduct {
 }
 
 export interface IAppState {
-    catalog: ProductItem[];
+    catalog: IProduct[];
     basket: string[];
     preview: string | null;
     order: IOrder | null;

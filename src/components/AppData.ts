@@ -3,21 +3,12 @@ import {FormErrors, IAppState, IOrder, IOrderForm, IProduct} from "../types";
 import {IEvents} from "./base/events";
 
 export type CatalogChangeEvent = {
-    catalog: ProductItem[]
+    catalog: IProduct[]
 };
-
-export class ProductItem extends Model<IProduct> {
-    id: string;
-    description: string;
-    image: string;
-    title: string;
-    category: string;
-    price: number;
-}
 
 export class AppState extends Model<IAppState> {
     basket: string[] = []; // Добавлена инициализация пустого массива
-    catalog: ProductItem[];
+    catalog: IProduct[];
     order: IOrder = {
         payment: '',
         email: '',
@@ -52,12 +43,12 @@ export class AppState extends Model<IAppState> {
 
     setCatalog(items: IProduct[]) {
         console.log('Setting catalog in AppState:', items); // Оставлен для отладки
-        this.catalog = items.map(item => new ProductItem(item, this.events));
+        this.catalog = items;
         console.log('Catalog set:', this.catalog); // Оставлен для отладки
         this.emitChanges('items:changed', { catalog: this.catalog });
     }
 
-    setPreview(item: ProductItem) {
+    setPreview(item: IProduct) {
         this.preview = item.id;
         this.emitChanges('preview:changed', item);
     }
