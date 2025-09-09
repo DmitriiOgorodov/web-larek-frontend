@@ -1,5 +1,3 @@
-// import { ProductItem } from '../components/AppData'; // Добавлен импорт ProductItem
-
 export interface IProduct {
     id: string;
     title: string;
@@ -26,16 +24,6 @@ export interface IOrderForm {
 export interface IOrder extends IOrderForm {
     items: string[];
     total: number; // Добавлено поле total
-}
-
-export interface IOrderContacts {
-	email: string;
-	phone: string;
-}
-
-export interface IOrderPayments {
-	payment: string;
-	address: string;
 }
 
 export type FormErrors = Partial<Record<keyof IOrder, string>>;

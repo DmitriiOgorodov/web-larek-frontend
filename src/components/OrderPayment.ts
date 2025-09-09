@@ -1,8 +1,8 @@
 import { Form } from './common/Form';
-import { IOrderPayments } from '../types';
+import { IOrder } from '../types';
 import { IEvents } from './base/events';
 
-export class OrderPayments extends Form<IOrderPayments> {
+export class OrderPayments extends Form<IOrder> {
 	protected _cardButton: HTMLButtonElement;
 	protected _cashButton: HTMLButtonElement;
 
