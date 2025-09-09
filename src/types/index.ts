@@ -14,16 +14,23 @@ export interface IAppState {
     order: IOrder | null;
 }
 
-export interface IOrderForm {
-    payment: string;
-    address: string;
-    email: string;
-    phone: string;
+export interface IOrderForm extends IOrderContacts, IOrderPayments {
+ 
 }
 
 export interface IOrder extends IOrderForm {
     items: string[];
     total: number; // Добавлено поле total
+}
+
+export interface IOrderContacts {
+	email: string;
+	phone: string;
+}
+
+export interface IOrderPayments {
+	payment: string;
+	address: string;
 }
 
 export type FormErrors = Partial<Record<keyof IOrder, string>>;

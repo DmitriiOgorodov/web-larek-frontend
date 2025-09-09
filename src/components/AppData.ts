@@ -9,13 +9,13 @@ export type CatalogChangeEvent = {
 export class AppState extends Model<IAppState> {
     basket: string[] = []; // Добавлена инициализация пустого массива
     catalog: IProduct[];
-    order: IOrder = {
+    order: IOrderForm = {
         payment: '',
         email: '',
         phone: '',
         address: '',
-        items: [],
-        total: 0
+        // items: [],
+        // total: 0
     };
     preview: string | null;
     formErrors: FormErrors = {};
@@ -26,15 +26,15 @@ export class AppState extends Model<IAppState> {
         } else {
             this.basket = this.basket.filter(item => item !== id);
         }
-        this.emitChanges('counter:changed', this.basket);
+      
         this.emitChanges('basket:changed', this.basket);
     }
 
     clearBasket() {
-        this.basket.forEach(id => {
-            this.toggleBasketItem(id, false);
-        });
-        this.order.items = [];
+        this.basket = [];
+        this.emitChanges('basket:changed', this.basket);
+    
+        // this.order.items = [];
     }
 
     getTotal() {
@@ -55,15 +55,16 @@ export class AppState extends Model<IAppState> {
 
     setOrderField(field: keyof IOrderForm, value: string) {
         this.order[field] = value;
-
+        // this.events.emit('order:changed', this.order);
         if (this.validateOrder()) {
             this.events.emit('order:ready', this.order);
         }
     }
 
-    setOrderPayment(value: string) {
-		if (this.order.payment !== value) this.order.payment = value;
-	}
+    // setOrderPayment(value: string) {
+	// 	if (this.order.payment !== value) this.order.payment = value;
+    //     this.events.emit('order:changed', this.order);
+	// }
 
     validateOrder() {
         const errors: typeof this.formErrors = {};

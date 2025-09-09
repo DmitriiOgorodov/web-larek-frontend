@@ -1,8 +1,8 @@
 import { Form } from './common/Form';
-import { IOrder } from '../types';
+import { IOrder, IOrderPayments } from '../types';
 import { IEvents } from './base/events';
 
-export class OrderPayments extends Form<IOrder> {
+export class OrderPayments extends Form<IOrderPayments> {
 	protected _cardButton: HTMLButtonElement;
 	protected _cashButton: HTMLButtonElement;
 
@@ -17,19 +17,15 @@ export class OrderPayments extends Form<IOrder> {
 
 		if (this._cardButton) {
 			this._cardButton.addEventListener('click', () => {
-				events.emit(`order:change payment`, {
-					payment: this._cardButton.name,
-					button: this._cardButton,
-				});
+				this.togglePayment(this._cardButton);
+        events.emit(`order.1:change`,  { field: 'payment', value: 'cash' });
 			});
 		}
 
 		if (this._cashButton) {
 			this._cashButton.addEventListener('click', () => {
-				events.emit(`order:change payment`, {
-					payment: this._cashButton.name,
-					button: this._cashButton,
-				});
+        this.togglePayment(this._cashButton);
+				events.emit(`order.2:change`,  { field: 'payment', value: 'cash' });
 			});
 		}
 	}
@@ -39,13 +35,31 @@ export class OrderPayments extends Form<IOrder> {
 			value;
 	}
 
-	togglePayment(value: HTMLElement) {
+  set payment(value: string) {
+    switch (value) {
+      case 'card':
+        this.toggleClass(this._cardButton, 'button_alt-active', true);
+     		this.toggleClass(this._cashButton, 'button_alt-active', false);
+
+        break;
+      case 'cash':
+        this.toggleClass(this._cashButton, 'button_alt-active', true);
+        this.toggleClass(this._cardButton, 'button_alt-active', false);
+        break;
+      default:
+        this.toggleClass(this._cardButton, 'button_alt-active', false);
+    		this.toggleClass(this._cashButton, 'button_alt-active', false);
+        break;
+    }
+	}
+
+  private	togglePayment(value: HTMLElement) {
 		this.cancelPayment();
 		this.toggleClass(value, 'button_alt-active', true);
 	}
 
-	cancelPayment() {
+	private cancelPayment() {
 		this.toggleClass(this._cardButton, 'button_alt-active', false);
 		this.toggleClass(this._cashButton, 'button_alt-active', false);
-	}
+  }
 }

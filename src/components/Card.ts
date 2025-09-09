@@ -2,37 +2,52 @@ import {Component} from "./base/Component";
 import {ensureElement} from "../utils/utils";
 import {ICardActions, IProduct} from "../types";
 
-interface ICard<T> {
+export class Product extends Component<ICard> {
+    protected _title: HTMLElement;
+    protected _price: HTMLElement;
+    protected _button?: HTMLButtonElement;
+
+    constructor(container: HTMLElement, actions?: ICardActions) {
+        super(container);
+
+        this._title = ensureElement<HTMLElement>(`.card__title`, container);
+        this._price = ensureElement<HTMLElement>(`.card__price`, container);
+        this._button = container.querySelector(`.card__button`);
+        if (actions?.onClick && this._button) {
+            this._button.addEventListener('click', actions.onClick);
+        }
+    }
+
+    set title(value: string) {
+        this.setText(this._title, value);
+    }
+
+    set price(value: number) {
+        this.setText(this._price, `${value} синапсов`);
+    }
+}
+
+interface ICard extends IProduct {
     title: string;
-    description?: string;
+    description: string;
     image: string;
     category: string;
     price: number;
     button?: string;
 }
 
-export class Card extends Component<ICard<string>> {
-    protected _title: HTMLElement;
+export class Card extends Product {
     protected _image: HTMLImageElement;
     protected _category: HTMLElement;
-    protected _price: HTMLElement;
-    protected _button?: HTMLButtonElement;
 
-    constructor(protected blockName: string, container: HTMLElement, actions?: ICardActions) {
-        super(container);
+    constructor(container: HTMLElement, actions?: ICardActions) {
+        super(container, actions);
 
-        this._title = ensureElement<HTMLElement>(`.${blockName}__title`, container);
-        this._image = ensureElement<HTMLImageElement>(`.${blockName}__image`, container);
-        this._category = ensureElement<HTMLElement>(`.${blockName}__category`, container);
-        this._price = ensureElement<HTMLElement>(`.${blockName}__price`, container);
-        this._button = container.querySelector(`.${blockName}__button`);
+        this._image = ensureElement<HTMLImageElement>(`.card__image`, container);
+        this._category = ensureElement<HTMLElement>(`.card__category`, container);
 
-        if (actions?.onClick) {
-            if (this._button) {
-                this._button.addEventListener('click', actions.onClick);
-            } else {
+        if (actions?.onClick && !this._button) {
                 container.addEventListener('click', actions.onClick);
-            }
         }
     }
 
@@ -40,16 +55,8 @@ export class Card extends Component<ICard<string>> {
         this.container.dataset.id = value;
     }
 
-    get id(): string {
-        return this.container.dataset.id || '';
-    }
-
     set title(value: string) {
         this.setText(this._title, value);
-    }
-
-    get title(): string {
-        return this._title.textContent || '';
     }
 
     set image(value: string) {
@@ -80,7 +87,7 @@ export class Card extends Component<ICard<string>> {
 
 export class CatalogItem extends Card {
     constructor(container: HTMLElement, actions?: ICardActions) {
-        super('card', container, actions);
+        super(container, actions);
     }
 }
 
@@ -88,7 +95,7 @@ export class PreviewItem extends Card {
     protected _description: HTMLElement;
 
     constructor(container: HTMLElement, actions?: ICardActions) {
-        super('card', container, actions);
+        super(container, actions);
         this._description = ensureElement<HTMLElement>(`.card__text`, container);
     }
 
@@ -103,34 +110,16 @@ export class PreviewItem extends Card {
     }
 }
 
-export class BasketItem extends Component<IProduct> {
-    protected _title: HTMLElement;
-    protected _price: HTMLElement;
+export class BasketItem extends Product {
+ 
     protected _index: HTMLElement;
-    protected _button: HTMLButtonElement;
 
     constructor(container: HTMLElement, actions?: ICardActions) {
-        super(container);
-
-        this._title = ensureElement<HTMLElement>(`.card__title`, container);
-        this._price = ensureElement<HTMLElement>(`.card__price`, container);
+        super(container, actions);
         this._index = ensureElement<HTMLElement>(`.basket__item-index`, container);
-        this._button = ensureElement<HTMLButtonElement>(`.card__button`, container);
-
-        if (actions?.onClick) {
-            this._button.addEventListener('click', actions.onClick);
-        }
     }
 
     set index(value: number) {
         this.setText(this._index, value);
-    }
-
-    set title(value: string) {
-        this.setText(this._title, value);
-    }
-
-    set price(value: number) {
-        this.setText(this._price, `${value} синапсов`);
     }
 }

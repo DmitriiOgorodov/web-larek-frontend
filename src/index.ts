@@ -47,6 +47,12 @@ const basket = new Basket(cloneTemplate(basketTemplate), events);
 // const order = new Order(cloneTemplate(orderTemplate), events);
 const orderContacts = new OrderContacts(cloneTemplate(OrderContactsTemplate), events);
 const orderPayments = new OrderPayments(cloneTemplate(OrderPaymentsTemplate), events);
+const success = new Success(cloneTemplate(successTemplate), {
+                onClick: () => {
+                    appData.clearBasket();
+                    modal.close();
+                }
+            });
 
 // Загружаем товары с сервера
 api.getProductList()
@@ -104,14 +110,7 @@ events.on('preview:changed', (item: IProduct) => {
     };
 
     if (item) {
-        api.getProductItem(item.id)
-            .then((result) => {
-                item.description = result.description;
-                showItem(item);
-            })
-            .catch((err) => {
-                console.error(err);
-            });
+        showItem(item);
     } else {
         modal.close();
     }
@@ -160,24 +159,25 @@ events.on('basket:open', () => {
 // });
 
 events.on('order:open', () => {
-	orderPayments.cancelPayment();
+	
 	modal.render({
 		content: orderPayments.render({
 			address: '',
+            payment: '',
 			valid: false,
 			errors: [],
 		}),
 	});
 });
 
-events.on(
-	'order:change payment',
-	(data: { payment: string; button: HTMLElement }) => {
-		appData.setOrderPayment(data.payment);
-		orderPayments.togglePayment(data.button);
-		appData.validateOrder();
-	}
-);
+// events.on(
+// 	'order:change payment',
+// 	(data: { payment: string; button: HTMLElement }) => {
+// 		appData.setOrder(data.payment);
+// 		orderPayments.togglePayment(data.button);
+// 		appData.validateOrder();
+// 	}
+// );
 
 events.on('order:submit', () => {
 	modal.render({
@@ -221,27 +221,15 @@ events.on('formErrors:change', (errors: Partial<IOrderForm>) => {
 
 // Отправка заказа
 events.on('contacts:submit', () => {
-    if (!appData.validateOrder()) {
-        // Проверка валидации
-        console.warn('Order validation failed, cannot submit');
-        return;
-    }
+    // appData.order.items = appData.basket;
+    // appData.order.total = appData.getTotal();
 
-    appData.order.items = appData.basket;
-    appData.order.total = appData.getTotal();
+    const order = Object.assign({items: appData.basket, total: appData.getTotal()}, appData.order);
 
-    api.orderProducts(appData.order)
+    api.orderProducts(order)
         .then((result) => {
-            const success = new Success(cloneTemplate(successTemplate), {
-                onClick: () => {
-                    appData.clearBasket();
-                    modal.close();
-                }
-            });
-
-            success.total = result.total;
             modal.render({
-                content: success.render({})
+                content: success.render({total: result.total})
             });
         })
         .catch(err => {
