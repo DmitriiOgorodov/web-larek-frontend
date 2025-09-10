@@ -54,7 +54,6 @@ const success = new Success(cloneTemplate(successTemplate), {
 // Загружаем товары с сервера
 api.getProductList()
     .then(data => {
-        console.log('API Response:', data); // Проверяем данные от API
         appData.setCatalog(data);
     })
     .catch(err => {
@@ -63,9 +62,7 @@ api.getProductList()
 
 // Изменились элементы каталога
 events.on<CatalogChangeEvent>('items:changed', () => {
-    console.log('Catalog changed:', appData.catalog); // Проверяем каталог
     const cards = appData.catalog.map(item => {
-        console.log('Rendering card for item:', item); // Отладка: проверяем каждый товар
         const card = new CatalogItem(cloneTemplate(cardCatalogTemplate), {
             onClick: () => events.emit('card:select', item)
         });
