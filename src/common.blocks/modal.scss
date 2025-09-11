@@ -3,7 +3,7 @@
 
 .modal {
   @include mixins.sublayer;
-  height: max-content;
+  height: 100%;
   position: absolute;
   display: none;
   justify-content: center;

@@ -1,6 +1,7 @@
 import {Component} from "./base/Component";
 import {ensureElement} from "../utils/utils";
 import {ICardActions, IProduct} from "../types";
+import { categoryMap } from '../utils/constants';
 
 export class Product extends Component<ICard> {
     protected _title: HTMLElement;
@@ -28,17 +29,18 @@ export class Product extends Component<ICard> {
 }
 
 interface ICard extends IProduct {
-    title: string;
-    description: string;
-    image: string;
-    category: string;
-    price: number;
+    // title: string;
+    // description: string;
+    // image: string;
+    // category: string;
+    // price: number;
     button?: string;
 }
 
 export class Card extends Product {
     protected _image: HTMLImageElement;
     protected _category: HTMLElement;
+    protected _modifier: string;
 
     constructor(container: HTMLElement, actions?: ICardActions) {
         super(container, actions);
@@ -65,6 +67,7 @@ export class Card extends Product {
 
     set category(value: string) {
         this.setText(this._category, value);
+        this.toggleClass(this._category, categoryMap.get(value), true);
     }
 
     set price(value: number) {

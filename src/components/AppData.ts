@@ -14,8 +14,6 @@ export class AppState extends Model<IAppState> {
         email: '',
         phone: '',
         address: '',
-        // items: [],
-        // total: 0
     };
     preview: string | null;
     formErrors: FormErrors = {};
@@ -33,8 +31,6 @@ export class AppState extends Model<IAppState> {
     clearBasket() {
         this.basket = [];
         this.emitChanges('basket:changed', this.basket);
-    
-        // this.order.items = [];
     }
 
     getTotal() {
@@ -42,9 +38,7 @@ export class AppState extends Model<IAppState> {
     }
 
     setCatalog(items: IProduct[]) {
-        console.log('Setting catalog in AppState:', items); // Оставлен для отладки
         this.catalog = items;
-        console.log('Catalog set:', this.catalog); // Оставлен для отладки
         this.emitChanges('items:changed', { catalog: this.catalog });
     }
 

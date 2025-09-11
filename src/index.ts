@@ -97,7 +97,7 @@ events.on('preview:changed', (item: IProduct) => {
                 category: item.category,
                 description: item.description,
                 price: item.price,
-                button: appData.basket.includes(item.id) ? 'Уже в корзине' : 'В корзину'
+                button: appData.basket.includes(item.id) ? 'Удалить из карзины' : 'В корзину'
             })
         });
     };
@@ -141,7 +141,6 @@ events.on('basket:open', () => {
 
 // Открыть форму заказа
 events.on('order:open', () => {
-	
 	modal.render({
 		content: orderPayments.render({
 			address: '',
