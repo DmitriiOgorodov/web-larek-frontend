@@ -49,7 +49,7 @@ export class AppState extends Model<IAppState> {
 
     setOrderField(field: keyof IOrderForm, value: string) {
         this.order[field] = value;
-        // this.events.emit('order:changed', this.order);
+        this.events.emit('order:changed', this.order);
         if (this.validateOrder()) {
             this.events.emit('order:ready', this.order);
         }
@@ -77,5 +77,16 @@ export class AppState extends Model<IAppState> {
         this.formErrors = errors;
         this.events.emit('formErrors:change', this.formErrors);
         return Object.keys(errors).length === 0;
+    }
+
+    clearOrder() {
+        this.order = {
+            payment: '',
+            email: '',
+            phone: '',
+            address: '',
+        };
+
+        this.formErrors = {};
     }
 }
